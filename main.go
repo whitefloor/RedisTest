@@ -30,7 +30,7 @@ func main() {
 	// 無序的唯一集合，類似 hash map
 	rdsClient.SAdd(ctx, "Set", "1", "2", "3")
 	setVal := rdsClient.SMembers(ctx, "Set").Val()
-	log.Println("Sets value", setVal)
+	log.Println("Sets value", setVal) // result [1 2 3]
 	// Redis Sorted Sets
 	// 有序的唯一集合，會依照 score 進行排列，相同的分數會依照 lexicographically 進行排序
 	rdsClient.ZAdd(ctx, "ZSet",
@@ -39,10 +39,15 @@ func main() {
 		redis.Z{Score: 2, Member: "3"},
 	)
 	zsetVal := rdsClient.ZRange(ctx, "ZSet", 0, -1).Val()
-	log.Println("ZSet value", zsetVal)
+	log.Println("ZSet value", zsetVal) // result [1 2 3]
 	// Redis Hashes
 	// 具有結構化的集合，field-value
-	rdsClient.HSet(ctx, "HSet", "1", "2", "3")
+	rdsClient.HSet(ctx, "HSet",
+		map[string]interface{}{
+			"key1": 1,
+			"key2": 2,
+			"key3": 3,
+		})
 	hsetVal := rdsClient.HGetAll(ctx, "HSet").Val()
-	log.Println(hsetVal)
+	log.Println(hsetVal) // result map[key1:1 key2:2 key3:3]
 }
